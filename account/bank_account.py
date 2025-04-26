@@ -1,27 +1,33 @@
+# changed 
+
 from account.transaction import Transaction
 from account.user import User
 
 class BankAccount:
-    def __init__(self,name= "John" ,email= "john@gmail.com", initial_balance=0):
-        if not isinstance(initial_balance , (int, float)) or initial_balance<0:
+    def __init__(self, name="John", email="john@gmail.com", initial_balance=0):
+        if not isinstance(initial_balance, (int, float)) or initial_balance < 0:
             print("Invalid initial balance!")
+            initial_balance = 0
         self.balance = initial_balance
         self.transactions_history = []
         self.account_type = "Generic"
         self.user = User(name, email)
 
     def deposit(self, amount):
-        if not isinstance(amount , (int, float)) and  amount <= 0:
+        if not isinstance(amount, (int, float)) or amount <= 0:
             print("Deposit amount is invalid!")
+            return
         self.balance += amount
         self.transactions_history.append(Transaction(amount, "deposit"))
 
     def withdraw(self, amount):
-        if not isinstance(amount ,(int, float))  and amount <= 0:
+        if not isinstance(amount, (int, float)) or amount <= 0:
             print("Withdrawal amount is invalid!")
-        if self.balance < amount-100:
+            return
+        if self.balance < amount:
             print("Insufficient Balance!")
-        self.balance += amount
+            return
+        self.balance -= amount  # Fixed: Subtract amount instead of adding
         self.transactions_history.append(Transaction(amount, "withdraw"))
 
     def get_balance(self):
@@ -42,7 +48,7 @@ class SavingsAccount(BankAccount):
 
     def withdraw(self, amount):
         if self.balance - amount < self.MIN_BALANCE:
-            print("")
+            print("A minimum balance of Rs.100 must be maintained in a Savings account!")
             return 
         super().withdraw(amount)
 
@@ -59,8 +65,8 @@ class StudentAccount(BankAccount):
     def withdraw(self, amount):
         if (self.balance - amount) < 100:
             print("A minimum balance of Rs.100 needed to withdraw from a Students account!")
+            return
         super().withdraw(amount)
 
     def get_account_type(self):
         return "Students account"
-
